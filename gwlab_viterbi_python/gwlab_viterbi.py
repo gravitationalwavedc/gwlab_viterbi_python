@@ -1,4 +1,5 @@
 import logging
+import itertools
 
 from gwdc_python import GWDC
 
@@ -6,6 +7,7 @@ from .viterbi_job import ViterbiJob
 from .file_reference import FileReference, FileReferenceList
 from .helpers import TimeRange
 from .utils import convert_dict_keys
+from .utils.file_download import _download_files, _save_file_map_fn, _get_file_map_fn
 from .settings import GWLAB_VITERBI_ENDPOINT
 
 logger = logging.getLogger(__name__)
@@ -198,3 +200,117 @@ class GWLabViterbi:
             )
 
         return file_list
+
+    def get_files_by_reference(self, file_references):
+        """Obtains file data when provided a FileReferenceList
+
+        Parameters
+        ----------
+        file_references : FileReferenceList
+            Contains the :class:`FileReference` objects for which to download the contents
+
+        Returns
+        -------
+        list
+            List of tuples containing the file path and file contents as a byte string
+        """
+        batched = file_references._batch_by_job_id()
+
+        file_ids = [
+            self._get_download_ids_from_tokens(job_id, job_files.get_tokens())
+            for job_id, job_files in batched.items()
+        ]
+
+        file_ids = list(itertools.chain.from_iterable(file_ids))
+        batched_files = FileReferenceList(itertools.chain.from_iterable(batched.values()))
+
+        file_paths = batched_files.get_paths()
+        total_size = batched_files.get_total_bytes()
+
+        files = _download_files(_get_file_map_fn, file_ids, file_paths, total_size)
+
+        logger.info(f'All {len(file_ids)} files downloaded!')
+
+        return files
+
+    def save_files_by_reference(self, file_references, root_path, preserve_directory_structure=True):
+        """Save files when provided a FileReferenceList and a root path
+
+        Parameters
+        ----------
+        file_references : FileReferenceList
+            Contains the :class:`FileReference` objects for which to save the associated files
+        root_path : str or ~pathlib.Path
+            Directory into which to save the files
+        preserve_directory_structure : bool, optional
+            Remove any directory structure for the downloaded files, by default True
+        """
+        batched = file_references._batch_by_job_id()
+
+        file_ids = [
+            self._get_download_ids_from_tokens(job_id, job_files.get_tokens())
+            for job_id, job_files in batched.items()
+        ]
+
+        file_ids = list(itertools.chain.from_iterable(file_ids))
+        batched_files = FileReferenceList(itertools.chain.from_iterable(batched.values()))
+
+        file_paths = batched_files.get_output_paths(root_path, preserve_directory_structure)
+        total_size = batched_files.get_total_bytes()
+
+        _download_files(_save_file_map_fn, file_ids, file_paths, total_size)
+
+        logger.info(f'All {len(file_ids)} files saved!')
+
+    def _get_download_id_from_token(self, job_id, file_token):
+        """Get a single file download id for a file download token
+
+        Parameters
+        ----------
+        job_id : str
+            Job id which owns the file token
+
+        file_token : str
+            Download token for the desired file
+
+        Returns
+        -------
+        str
+            Download id for the desired file
+        """
+        return self._get_download_ids_from_tokens(job_id, [file_token])[0]
+
+    def _get_download_ids_from_tokens(self, job_id, file_tokens):
+        """Get many file download ids for a list of file download tokens
+
+        Parameters
+        ----------
+        job_id : str
+            Job id which owns the file token
+
+        file_tokens : list
+            Download tokens for the desired files
+
+        Returns
+        -------
+        list
+            List of download ids for the desired files
+        """
+        query = """
+            mutation ResultFileMutation($input: GenerateFileDownloadIdsInput!) {
+                generateFileDownloadIds(input: $input) {
+                    result
+                }
+            }
+        """
+
+        variables = {
+            "input": {
+                "jobId": job_id,
+                "downloadTokens": file_tokens
+            }
+        }
+
+        data = self.request(query=query, variables=variables)
+
+        return data['generateFileDownloadIds']['result']

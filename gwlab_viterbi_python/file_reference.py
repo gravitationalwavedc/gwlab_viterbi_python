@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from collections import UserList
+from collections import UserList, OrderedDict
 from pathlib import Path
 from .utils import remove_path_anchor
 
@@ -52,3 +52,70 @@ class FileReferenceList(UserList):
         """
         self._check_items([item])
         self.data.append(item)
+
+    def get_total_bytes(self):
+        """Sum the total size of each file represented in the list
+
+        Returns
+        -------
+        int
+            Total size of all files
+        """
+        total_bytes = 0
+        for ref in self.data:
+            total_bytes += ref.file_size
+
+        return total_bytes
+
+    def get_tokens(self):
+        """Get all the download tokens in a list
+
+        Returns
+        -------
+        list
+            List of download tokens
+        """
+        return [ref.download_token for ref in self.data]
+
+    def get_paths(self):
+        """Get all the file paths in a list
+
+        Returns
+        -------
+        list
+            List of file paths
+        """
+        return [ref.path for ref in self.data]
+
+    def get_output_paths(self, root_path, preserve_directory_structure=True):
+        """Get all the file paths modified to give them a base directory.
+        Can also optionally remove any existing directory structure
+
+        Parameters
+        ----------
+        root_path : str or ~pathlib.Path
+            Directory to add to the beginning of the file paths
+        preserve_directory_structure : bool, optional
+            Retain existing directory structure in the file paths, by default True
+
+        Returns
+        -------
+        list
+            List of output file paths
+        """
+        paths = []
+        for ref in self.data:
+            if preserve_directory_structure:
+                paths.append(root_path / ref.path)
+            else:
+                paths.append(root_path / Path(ref.path.name))
+        return paths
+
+    def _batch_by_job_id(self):
+        batched = OrderedDict()
+        for ref in self.data:
+            job_files = batched.get(ref.job_id, FileReferenceList())
+            job_files.append(ref)
+            batched[ref.job_id] = job_files
+
+        return batched
