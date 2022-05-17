@@ -71,6 +71,14 @@ def test_file_reference_list(setup_dicts):
     assert file_reference_list.get_paths() == [ref.path for ref in file_references]
 
 
+def test_custom_path_filter_args(mocker):
+    mocker.patch('gwlab_viterbi_python.file_reference.file_filters.custom_path_filter')
+    try:
+        FileReferenceList().filter_list_by_path(directory='test', name='test', extension='test')
+    except Exception as e:
+        pytest.fail(f"Test failed with exception: {e}")
+
+
 def test_file_reference_list_types(setup_dicts):
     file_references = [FileReference(**file_dict) for file_dict in setup_dicts]
     file_reference_list = FileReferenceList(file_references)

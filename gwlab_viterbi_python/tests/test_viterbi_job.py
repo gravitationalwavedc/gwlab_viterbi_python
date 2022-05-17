@@ -1,134 +1,77 @@
 import pytest
 from gwlab_viterbi_python import ViterbiJob, FileReference, FileReferenceList
+from gwlab_viterbi_python.utils import file_filters
 
 
 @pytest.fixture
-def png_data_result():
+def ini():
     return FileReferenceList([
         FileReference(
-            path='data/dir/test1.png',
+            path='arbitrary/dir/test1.ini',
             file_size='1',
             download_token='test_token_1',
             job_id='id'
         ),
         FileReference(
-            path='data/dir/test2.png',
+            path='arbitrary/dir/test2.ini',
             file_size='1',
             download_token='test_token_2',
-            job_id='id'
-        ),
-        FileReference(
-            path='result/dir/test1.png',
-            file_size='1',
-            download_token='test_token_3',
-            job_id='id'
-        ),
-        FileReference(
-            path='result/dir/test2.png',
-            file_size='1',
-            download_token='test_token_4',
             job_id='id'
         ),
     ])
 
 
 @pytest.fixture
-def png_extra():
+def candidates():
     return FileReferenceList([
         FileReference(
-            path='test1.png',
+            path='results_a0_phase_loglikes_scores.dat',
+            file_size='1',
+            download_token='test_token_3',
+            job_id='id'
+        ),
+    ])
+
+
+@pytest.fixture
+def extra():
+    return FileReferenceList([
+        FileReference(
+            path='extra/ini.png',
+            file_size='1',
+            download_token='test_token_4',
+            job_id='id'
+        ),
+        FileReference(
+            path='extra_scores.dat',
             file_size='1',
             download_token='test_token_5',
             job_id='id'
         ),
         FileReference(
-            path='test2.png',
+            path='an/arbitrary.extra',
             file_size='1',
             download_token='test_token_6',
             job_id='id'
         ),
+    ])
+
+
+@pytest.fixture
+def txt():
+    return FileReferenceList([
         FileReference(
-            path='arbitrary/dir/test1.png',
+            path='atoms/188-0/sfts_used.txt',
             file_size='1',
             download_token='test_token_7',
             job_id='id'
         ),
-        FileReference(
-            path='arbitrary/dir/test2.png',
-            file_size='1',
-            download_token='test_token_8',
-            job_id='id'
-        ),
     ])
 
 
 @pytest.fixture
-def corner():
-    return FileReferenceList([
-        FileReference(
-            path='test1_corner.png',
-            file_size='1',
-            download_token='test_token_9',
-            job_id='id'
-        ),
-        FileReference(
-            path='test2_corner.png',
-            file_size='1',
-            download_token='test_token_10',
-            job_id='id'
-        ),
-    ])
-
-
-@pytest.fixture
-def config():
-    return FileReferenceList([
-        FileReference(
-            path='a_config_complete.ini',
-            file_size='1',
-            download_token='test_token_11',
-            job_id='id'
-        ),
-    ])
-
-
-@pytest.fixture
-def json():
-    return FileReferenceList([
-        FileReference(
-            path='result/dir/a_merge_result.json',
-            file_size='1',
-            download_token='test_token_12',
-            job_id='id'
-        ),
-    ])
-
-
-@pytest.fixture
-def index():
-    return FileReferenceList([
-        FileReference(
-            path='index.html',
-            file_size='1',
-            download_token='test_token_13',
-            job_id='id'
-        ),
-    ])
-
-
-@pytest.fixture
-def png(png_data_result, png_extra, corner):
-    return png_data_result + png_extra + corner
-
-
-@pytest.fixture
-def default(png_data_result, config, json, index):
-    return png_data_result + config + json + index
-
-
-@pytest.fixture
-def full(png, config, json, index):
-    return png + config + json + index
+def full(ini, candidates, extra, txt):
+    return ini + candidates + extra + txt
 
 
 @pytest.fixture
@@ -182,3 +125,46 @@ def test_viterbi_job_equality(mocker):
     assert ViterbiJob(**job_data) != ViterbiJob(**job_data_changed_id)
     assert ViterbiJob(**job_data) != ViterbiJob(**job_data_changed_name)
     assert ViterbiJob(**job_data) != ViterbiJob(**job_data_changed_user)
+
+
+def test_viterbi_job_file_filters(mocker, mock_viterbi_job_files, full, ini, candidates):
+    viterbi_job = mock_viterbi_job_files
+    assert file_filters.sort_file_list(viterbi_job.get_ini_file_list()) == file_filters.sort_file_list(ini)
+    assert file_filters.sort_file_list(viterbi_job.get_candidates_file_list()) == \
+        file_filters.sort_file_list(candidates)
+
+    assert viterbi_job.client._get_files_by_job_id.call_count == 2
+
+
+def test_viterbi_job_file_filters_args(mocker, mock_viterbi_job):
+    mocker.patch('gwlab_viterbi_python.viterbi_job.ViterbiJob.get_full_file_list')
+    viterbi_job = mock_viterbi_job({
+        'save_files_by_reference': None,
+        'get_files_by_reference': None,
+    })
+    try:
+        viterbi_job.get_ini_files()
+        viterbi_job.save_ini_files(root_path='.', preserve_directory_structure=True)
+        viterbi_job.get_candidates_files()
+        viterbi_job.save_candidates_files(root_path='.', preserve_directory_structure=True)
+    except Exception as e:
+        pytest.fail(f"Test failed with exception: {e}")
+
+
+def test_register_file_list_filter(mock_viterbi_job_files, txt):
+    viterbi_job = mock_viterbi_job_files
+
+    def get_txt_file(file_list):
+        return [f for f in file_list if f.path.suffix == '.txt']
+
+    assert getattr(viterbi_job, 'get_txt_file_list', None) is None
+    assert getattr(viterbi_job, 'get_txt_files', None) is None
+    assert getattr(viterbi_job, 'save_txt_files', None) is None
+
+    ViterbiJob.register_file_list_filter('txt', get_txt_file)
+
+    assert getattr(viterbi_job, 'get_txt_file_list', None) is not None
+    assert getattr(viterbi_job, 'get_txt_files', None) is not None
+    assert getattr(viterbi_job, 'save_txt_files', None) is not None
+
+    assert viterbi_job.get_txt_file_list() == txt

@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 from collections import UserList, OrderedDict
 from pathlib import Path
-from .utils import remove_path_anchor
+from .utils import remove_path_anchor, file_filters
 
 
 @dataclass
@@ -52,6 +52,40 @@ class FileReferenceList(UserList):
         """
         self._check_items([item])
         self.data.append(item)
+
+    def filter_list(self, file_filter_fn, *args, **kwargs):
+        """Create a subset of this list by filtering the contents with a function.
+
+        Parameters
+        ----------
+        file_filter_fn : function
+            Must take a list of FileReference objects and return only those that are desired
+
+        Returns
+        -------
+        FileReferenceList
+            Filtered list
+        """
+        return FileReferenceList(file_filter_fn(self.data, *args, **kwargs))
+
+    def filter_list_by_path(self, directory=None, name=None, extension=None):
+        """Create a subset of this list by filtering the contents based on their path attributes
+
+        Parameters
+        ----------
+        directory : str, optional
+            Matches any of the directories in the file path, by default None
+        name : str, optional
+            Matches the name of the file, by default None
+        extension : str, optional
+            Matches the file extension, by default None
+
+        Returns
+        -------
+        FileReferenceList
+            Filtered list
+        """
+        return self.filter_list(file_filters.custom_path_filter, directory, name, extension)
 
     def get_total_bytes(self):
         """Sum the total size of each file represented in the list
