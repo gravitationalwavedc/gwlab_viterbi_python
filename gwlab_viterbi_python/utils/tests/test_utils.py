@@ -1,11 +1,9 @@
 import pytest
-from pathlib import Path
 from gwlab_viterbi_python.utils import (
     to_snake_case,
     to_camel_case,
     convert_dict_keys,
-    rename_dict_keys,
-    remove_path_anchor
+    rename_dict_keys
 )
 
 
@@ -138,10 +136,3 @@ def test_convert_dict_keys(snake_case_dict, snake_case_renamed_dict, camel_case_
     # Can convert and rename from key map
     assert renamed_camel_case_dict == snake_case_renamed_dict[1]
     assert renamed_snake_case_dict == camel_case_renamed_dict[1]
-
-
-def test_remove_path_anchor():
-    assert remove_path_anchor(Path('/a/test/absolute/path')) == Path('a/test/absolute/path')
-    assert remove_path_anchor(Path('//another/test/absolute/path')) == Path('another/test/absolute/path')
-    assert remove_path_anchor(Path('a/test/relative/path')) == Path('a/test/relative/path')
-    assert remove_path_anchor(Path('./another/test/relative/path')) == Path('another/test/relative/path')

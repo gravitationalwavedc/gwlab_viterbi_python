@@ -2,25 +2,6 @@ import re
 from functools import partial
 
 
-def remove_path_anchor(path):
-    """Removes the path anchor, making it a relative path
-
-    Parameters
-    ----------
-    path : pathlib.Path
-        Path from which to strip anchor
-
-    Returns
-    -------
-    Path
-        Relative path
-    """
-    if path.is_absolute():
-        return path.relative_to(path.anchor)
-    else:
-        return path
-
-
 def to_snake_case(key):
     """Rewrites a camelCase string in snake_case
 

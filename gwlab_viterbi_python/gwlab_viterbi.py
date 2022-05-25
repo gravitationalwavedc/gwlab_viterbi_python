@@ -2,9 +2,9 @@ import logging
 import itertools
 
 from gwdc_python import GWDC
+from gwdc_python.files import FileReference, FileReferenceList
 
 from .viterbi_job import ViterbiJob
-from .file_reference import FileReference, FileReferenceList
 from .helpers import TimeRange
 from .utils import convert_dict_keys
 from .utils.file_download import _download_files, _save_file_map_fn, _get_file_map_fn
@@ -214,7 +214,7 @@ class GWLabViterbi:
         list
             List of tuples containing the file path and file contents as a byte string
         """
-        batched = file_references._batch_by_job_id()
+        batched = file_references.batched
 
         file_ids = [
             self._get_download_ids_from_tokens(job_id, job_files.get_tokens())
@@ -222,7 +222,7 @@ class GWLabViterbi:
         ]
 
         file_ids = list(itertools.chain.from_iterable(file_ids))
-        batched_files = FileReferenceList(itertools.chain.from_iterable(batched.values()))
+        batched_files = FileReferenceList(list(itertools.chain.from_iterable(batched.values())))
 
         file_paths = batched_files.get_paths()
         total_size = batched_files.get_total_bytes()
@@ -245,7 +245,7 @@ class GWLabViterbi:
         preserve_directory_structure : bool, optional
             Remove any directory structure for the downloaded files, by default True
         """
-        batched = file_references._batch_by_job_id()
+        batched = file_references.batched
 
         file_ids = [
             self._get_download_ids_from_tokens(job_id, job_files.get_tokens())
@@ -253,7 +253,7 @@ class GWLabViterbi:
         ]
 
         file_ids = list(itertools.chain.from_iterable(file_ids))
-        batched_files = FileReferenceList(itertools.chain.from_iterable(batched.values()))
+        batched_files = FileReferenceList(list(itertools.chain.from_iterable(batched.values())))
 
         file_paths = batched_files.get_output_paths(root_path, preserve_directory_structure)
         total_size = batched_files.get_total_bytes()

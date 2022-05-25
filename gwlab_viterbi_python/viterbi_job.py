@@ -18,8 +18,8 @@ class ViterbiJob:
 
     Parameters
     ----------
-    client : ~gwcloud_python.gwcloud.GWCloud
-        A reference to the GWCloud object instance from which the ViterbiJob was created
+    client : ~gwlab_viterbi_python.gwlab_viterbi.GWLabViterbi
+        A reference to the GWLabViterbi object instance from which the ViterbiJob was created
     job_id : str
         The id of the Viterbi job, required to obtain the files associated with it
     name : str
@@ -65,8 +65,9 @@ class ViterbiJob:
 
         Returns
         -------
-        .FileReferenceList
-            Contains FileReference instances for each of the files associated with this job
+        ~gwdc_python.files.file_reference.FileReferenceList
+            Contains :class:`~gwdc_python.files.file_reference.FileReference` instances
+            for each of the files associated with this job
         """
         result = self.client._get_files_by_job_id(self.job_id)
         return result

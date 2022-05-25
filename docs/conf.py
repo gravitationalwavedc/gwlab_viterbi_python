@@ -32,7 +32,6 @@ author = _PROJECT_METADATA['Author']
 release = _PROJECT_METADATA['Version']
 
 
-
 # -- General configuration ---------------------------------------------------
 
 # Add any Sphinx extension module names here, as strings. They can be
@@ -42,7 +41,6 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.napoleon',
     'sphinx.ext.intersphinx'
-
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -68,5 +66,6 @@ html_static_path = ['_static']
 
 # Allowing links to external docs
 intersphinx_mapping = {
-    'python': ('https://docs.python.org/3', None)
+    'python': ('https://docs.python.org/3', None),
+    'gwdc_python': ('https://gwdc-python.readthedocs.io/en/latest/', None)
 }

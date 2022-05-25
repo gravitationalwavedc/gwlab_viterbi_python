@@ -10,6 +10,7 @@ Welcome to GWLab Viterbi Python's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   viterbijob
 
 
 Indices and tables

@@ -1,6 +1,5 @@
 import pytest
 from pathlib import Path
-from functools import partial
 from gwlab_viterbi_python.utils import identifiers
 
 
@@ -24,18 +23,6 @@ def setup_paths():
 @pytest.fixture
 def setup_identifiers():
     return [
-        (
-            partial(identifiers._file_dir, directory='this'),
-            ['dir_ini', 'no_suffix', 'ini_dir', 'dat_dir', 'dir_candidates', 'candidates_bad_ext']
-        ),
-        (
-            partial(identifiers._file_name, name='test'),
-            ['ini', 'dir_ini', 'no_suffix']
-        ),
-        (
-            partial(identifiers._file_suffix, suffix='dat'),
-            ['candidates', 'dir_candidates', 'candidates_bad_pattern']
-        ),
         (
             identifiers.ini_file,
             ['ini', 'dir_ini']

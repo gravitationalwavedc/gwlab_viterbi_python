@@ -1,6 +1,6 @@
 import pytest
-from gwlab_viterbi_python.utils import file_filters
 from gwlab_viterbi_python import FileReference, FileReferenceList
+from gwlab_viterbi_python.utils import file_filters
 
 
 @pytest.fixture
@@ -70,10 +70,3 @@ def test_ini_file_filter(full, ini):
 def test_candidates_file_filter(full, candidates):
     sub_list = file_filters.candidates_filter(full)
     assert file_filters.sort_file_list(sub_list) == file_filters.sort_file_list(candidates)
-
-
-def test_custom_path_file_filter(full, extra):
-    # Test here is not exactly comprehensive, but it's good enough for now
-    assert file_filters.custom_path_filter(full, directory='extra') == extra[:1]
-    assert file_filters.custom_path_filter(full, name='extra') == extra[1:2]
-    assert file_filters.custom_path_filter(full, extension='extra') == extra[2:]

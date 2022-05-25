@@ -1,13 +1,5 @@
+from gwdc_python.files.filters import filter_file_list
 from . import identifiers
-from functools import partial, reduce
-
-
-def _filter_file_list(identifier, file_list):
-    return [f for f in file_list if identifier(f.path)]
-
-
-def _match_all(identifier_list, file_list):
-    return reduce(lambda res, f: _filter_file_list(f, res), identifier_list, file_list)
 
 
 def ini_filter(file_list):
@@ -25,7 +17,7 @@ def ini_filter(file_list):
     .FileReferenceList
         Subset of the input FileReferenceList containing only the paths that match the above config file criteria
     """
-    return _filter_file_list(identifiers.ini_file, file_list)
+    return filter_file_list(identifiers.ini_file, file_list)[0]
 
 
 def candidates_filter(file_list):
@@ -43,41 +35,7 @@ def candidates_filter(file_list):
     .FileReferenceList
         Subset of the input FileReferenceList containing only the paths that match the above config file criteria
     """
-    return _filter_file_list(identifiers.candidates_file, file_list)
-
-
-def custom_path_filter(file_list, directory=None, name=None, extension=None):
-    """Takes an input file list and returns a subset of that file list containing:
-
-    - Any file that has any enclosing directory matching the `directory` argument
-    - Any file that has any part of its filename matching the `name` argument
-    - Any file that has an extension matching the `extension` argument
-
-    Parameters
-    ----------
-    file_list : .FileReferenceList
-        A list of FileReference objects which will be filtered
-    directory : str, optional
-        Directory to match, by default None
-    name : str, optional
-        Part of filename to match, by default None
-    extension : str, optional
-        File extension to match, by default None
-
-    Returns
-    -------
-    .FileReferenceList
-        Subset of the input FileReferenceList containing only the paths that match the above corner plot file criteria
-    """
-    identifier_list = []
-    if directory:
-        identifier_list.append(partial(identifiers._file_dir, directory=str(directory)))
-    if name:
-        identifier_list.append(partial(identifiers._file_stem, stem=str(name)))
-    if extension:
-        identifier_list.append(partial(identifiers._file_suffix, suffix=str(extension)))
-
-    return _match_all(identifier_list, file_list)
+    return filter_file_list(identifiers.candidates_file, file_list)[0]
 
 
 def sort_file_list(file_list):

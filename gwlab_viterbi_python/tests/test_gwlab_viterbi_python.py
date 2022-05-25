@@ -363,7 +363,7 @@ def test_gwlab_get_files_by_reference(setup_mock_download_fns, setup_gwl_request
 
     mock_calls = [
         mocker.call(job_id, job_files.get_tokens())
-        for job_id, job_files in test_files._batch_by_job_id().items()
+        for job_id, job_files in test_files.batched.items()
     ]
 
     mock_get_ids.assert_has_calls(mock_calls)
@@ -385,7 +385,7 @@ def test_gwlab_save_batched_files(setup_mock_download_fns, setup_gwl_request, mo
 
     mock_calls = [
         mocker.call(job_id, job_files.get_tokens())
-        for job_id, job_files in test_files._batch_by_job_id().items()
+        for job_id, job_files in test_files.batched.items()
     ]
 
     mock_get_ids.assert_has_calls(mock_calls)
