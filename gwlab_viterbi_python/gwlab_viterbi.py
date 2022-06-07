@@ -6,7 +6,7 @@ from gwdc_python.files import FileReference, FileReferenceList
 
 from .viterbi_job import ViterbiJob
 from .helpers import TimeRange
-from .utils import convert_dict_keys
+from .utils import rename_dict_keys
 from .utils.file_download import _download_files, _save_file_map_fn, _get_file_map_fn
 from .settings import GWLAB_VITERBI_ENDPOINT
 
@@ -29,7 +29,7 @@ class GWLabViterbi:
 
         return ViterbiJob(
             client=self,
-            **convert_dict_keys(
+            **rename_dict_keys(
                 query_data,
                 {'id': 'job_id'}
             )
@@ -74,17 +74,17 @@ class GWLabViterbi:
 
         variables = {
             "search": search,
-            "timeRange": time_range.value if isinstance(time_range, TimeRange) else time_range,
+            "time_range": time_range.value if isinstance(time_range, TimeRange) else time_range,
             "first": number
         }
 
         data = self.request(query=query, variables=variables)
 
-        if not data['publicViterbiJobs']['edges']:
+        if not data['public_viterbi_jobs']['edges']:
             logger.info('Job search returned no results.')
             return []
 
-        return [self._get_job_model_from_query(job['node']) for job in data['publicViterbiJobs']['edges']]
+        return [self._get_job_model_from_query(job['node']) for job in data['public_viterbi_jobs']['edges']]
 
     def get_job_by_id(self, job_id):
         """Get a Viterbi job instance corresponding to a specific job ID
@@ -120,11 +120,11 @@ class GWLabViterbi:
 
         data = self.request(query=query, variables=variables)
 
-        if not data['viterbiJob']:
+        if not data['viterbi_job']:
             logger.info('No job matching input ID was returned.')
             return None
 
-        return self._get_job_model_from_query(data['viterbiJob'])
+        return self._get_job_model_from_query(data['viterbi_job'])
 
     def get_user_jobs(self, number=100):
         """Obtains a list of Viterbi jobs created by the user, filtering based on the search terms
@@ -165,7 +165,7 @@ class GWLabViterbi:
 
         data = self.request(query=query, variables=variables)
 
-        return [self._get_job_model_from_query(job['node']) for job in data['viterbiJobs']['edges']]
+        return [self._get_job_model_from_query(job['node']) for job in data['viterbi_jobs']['edges']]
 
     def _get_files_by_job_id(self, job_id):
         query = """
@@ -182,10 +182,10 @@ class GWLabViterbi:
         """
 
         variables = {
-            "jobId": job_id
+            "job_id": job_id
         }
 
-        data = convert_dict_keys(self.request(query=query, variables=variables))
+        data = self.request(query=query, variables=variables)
 
         file_list = FileReferenceList()
         for file_data in data['viterbi_result_files']['files']:
@@ -306,11 +306,11 @@ class GWLabViterbi:
 
         variables = {
             "input": {
-                "jobId": job_id,
-                "downloadTokens": file_tokens
+                "job_id": job_id,
+                "download_tokens": file_tokens
             }
         }
 
         data = self.request(query=query, variables=variables)
 
-        return data['generateFileDownloadIds']['result']
+        return data['generate_file_download_ids']['result']
