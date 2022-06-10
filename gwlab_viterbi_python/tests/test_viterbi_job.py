@@ -95,7 +95,7 @@ def mock_viterbi_job(mocker):
 
 @pytest.fixture
 def mock_viterbi_job_files(mock_viterbi_job, full):
-    return mock_viterbi_job({'_get_files_by_job_id': full})
+    return mock_viterbi_job({'_get_files_by_job_id': (full, False)})
 
 
 def test_viterbi_job_full_file_list(mock_viterbi_job_files, full):

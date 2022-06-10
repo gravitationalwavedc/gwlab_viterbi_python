@@ -1,21 +1,16 @@
-import logging
 import itertools
 
 from gwdc_python import GWDC
 from gwdc_python.files import FileReference, FileReferenceList
+from gwdc_python.helpers import TimeRange
+from gwdc_python.utils import rename_dict_keys
+from gwdc_python.logger import create_logger
 
 from .viterbi_job import ViterbiJob
-from .helpers import TimeRange
-from .utils import rename_dict_keys
 from .utils.file_download import _download_files, _save_file_map_fn, _get_file_map_fn
 from .settings import GWLAB_VITERBI_ENDPOINT
 
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
-
-ch = logging.StreamHandler()
-ch.setLevel(logging.INFO)
-logger.addHandler(ch)
+logger = create_logger(__name__)
 
 
 class GWLabViterbi:
@@ -199,7 +194,7 @@ class GWLabViterbi:
                 )
             )
 
-        return file_list
+        return file_list, False
 
     def get_files_by_reference(self, file_references):
         """Obtains file data when provided a FileReferenceList

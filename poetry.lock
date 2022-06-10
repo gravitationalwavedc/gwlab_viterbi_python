@@ -147,7 +147,7 @@ tests = ["coverage", "pytest", "pytest-cov", "pytest-django"]
 
 [[package]]
 name = "gwdc-python"
-version = "0.3.2"
+version = "0.4.0"
 description = "API for GWDC modules"
 category = "main"
 optional = false
@@ -634,7 +634,7 @@ docs = ["Sphinx", "sphinx-rtd-theme"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "f54e6024c5492366e0e9190f2607513afb7e7f2bf80a603b5fbb597752acca98"
+content-hash = "7bd72d4b6a33349e0709d2d90ace7078fe7f6f128da5c4c162ebdc494d57e3fe"
 
 [metadata.files]
 alabaster = [

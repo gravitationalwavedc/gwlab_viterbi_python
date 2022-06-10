@@ -1,16 +1,9 @@
-import logging
 from .utils import file_filters
-from .helpers import JobStatus
 
 from gwdc_python.jobs import JobBase
+from gwdc_python.logger import create_logger
 
-
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
-
-ch = logging.StreamHandler()
-ch.setLevel(logging.INFO)
-logger.addHandler(ch)
+logger = create_logger(__name__)
 
 
 class ViterbiJob(JobBase):
@@ -42,31 +35,5 @@ class ViterbiJob(JobBase):
     }
 
     def __init__(self, client, job_id, name, description, user, job_status, **kwargs):
-        self.client = client
-        self.job_id = job_id
-        self.name = name
-        self.description = description
-        self.user = user
-        self.status = JobStatus(status=job_status['name'], date=job_status['date'])
+        super().__init__(client, job_id, name, description, user, job_status)
         self.other = kwargs
-
-    def __eq__(self, other):
-        if isinstance(other, ViterbiJob):
-            return (
-                self.job_id == other.job_id and
-                self.name == other.name and
-                self.user == other.user
-            )
-        return False
-
-    def get_full_file_list(self):
-        """Get information for all files associated with this job
-
-        Returns
-        -------
-        ~gwdc_python.files.file_reference.FileReferenceList
-            Contains :class:`~gwdc_python.files.file_reference.FileReference` instances
-            for each of the files associated with this job
-        """
-        result = self.client._get_files_by_job_id(self.job_id)
-        return result

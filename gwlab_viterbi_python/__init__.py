@@ -1,8 +1,8 @@
 from .gwlab_viterbi import GWLabViterbi
 from .viterbi_job import ViterbiJob
-from .helpers import TimeRange, JobStatus
 
 from gwdc_python.files import FileReference, FileReferenceList
+from gwdc_python.helpers import TimeRange, JobStatus
 
 
 try:

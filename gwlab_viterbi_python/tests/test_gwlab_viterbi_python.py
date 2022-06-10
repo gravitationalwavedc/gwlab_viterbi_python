@@ -1,7 +1,10 @@
-from gwlab_viterbi_python import GWLabViterbi, ViterbiJob, FileReference, FileReferenceList, JobStatus, TimeRange
-from gwlab_viterbi_python.utils.file_download import _get_file_map_fn, _save_file_map_fn
 import pytest
 from tempfile import TemporaryFile
+from gwdc_python.files import FileReference, FileReferenceList
+from gwdc_python.helpers import JobStatus, TimeRange
+
+from gwlab_viterbi_python import GWLabViterbi, ViterbiJob
+from gwlab_viterbi_python.utils.file_download import _get_file_map_fn, _save_file_map_fn
 
 
 @pytest.fixture
@@ -324,7 +327,7 @@ def test_gwlab_files_by_job_id(setup_gwl_request, job_file_data):
         }
     }
 
-    file_list = gwl._get_files_by_job_id('arbitrary_job_id')
+    file_list, _ = gwl._get_files_by_job_id('arbitrary_job_id')
 
     mock_request.assert_called_with(
         query="""
