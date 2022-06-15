@@ -1,10 +1,12 @@
 import pytest
+from dataclasses import asdict
 from tempfile import TemporaryFile
 from gwdc_python.files import FileReference, FileReferenceList
 from gwdc_python.helpers import JobStatus, TimeRange
 
 from gwlab_viterbi_python import GWLabViterbi, ViterbiJob
 from gwlab_viterbi_python.utils.file_download import _get_file_map_fn, _save_file_map_fn
+from gwlab_viterbi_python.utils.inputs import DataInput, DataParametersInput, SearchParametersInput
 
 
 @pytest.fixture
@@ -398,3 +400,60 @@ def test_gwlab_save_batched_files(setup_mock_download_fns, setup_gwl_request, mo
         test_files.get_output_paths('test_dir', preserve_directory_structure=True),
         test_files.get_total_bytes()
     )
+
+
+def test_gwlab_start_job(setup_gwl_request, mocker):
+    gwl, mock_request = setup_gwl_request
+
+    mock_request.return_value = {
+        "new_viterbi_job": {
+            "result": {
+                "job_id": "test_id"
+            }
+        }
+    }
+
+    gwl.get_job_by_id = mocker.Mock()
+
+    test_name = "test_name"
+    test_description = "test_description"
+    test_privacy = False
+    test_data_input = DataInput()
+    test_data_params_input = DataParametersInput()
+    test_search_params_input = SearchParametersInput()
+
+    mock_return = gwl.start_viterbi_job(
+        job_name=test_name,
+        job_description=test_description,
+        private=test_privacy,
+        data_input=test_data_input,
+        data_params=test_data_params_input,
+        search_params=test_search_params_input
+    )
+    mock_request.assert_called_with(
+        query="""
+            mutation NewViterbiJob($input: ViterbiJobMutationInput!){
+                newViterbiJob (input: $input) {
+                    result {
+                        jobId
+                    }
+                }
+            }
+        """,
+        variables={
+            "input": {
+                "start": {
+                    "name": test_name,
+                    "description": test_description,
+                    "private": test_privacy,
+                },
+                "data": asdict(test_data_input),
+                "data_parameters": asdict(test_data_params_input),
+                "search_parameters": asdict(test_search_params_input),
+            }
+        }
+    )
+
+    gwl.get_job_by_id.assert_called_once_with("test_id")
+
+    assert mock_return == gwl.get_job_by_id.return_value
