@@ -1,4 +1,5 @@
 import itertools
+from dataclasses import asdict
 
 from gwdc_python import GWDC
 from gwdc_python.files import FileReference, FileReferenceList
@@ -17,6 +18,43 @@ class GWLabViterbi:
     def __init__(self, token, endpoint=GWLAB_VITERBI_ENDPOINT):
         self.client = GWDC(token=token, endpoint=endpoint)
         self.request = self.client.request
+
+    def start_viterbi_job(self, job_name, job_description, private, data_input, data_params, search_params):
+        """Start a viterbi job in the most basic possible way
+
+        Parameters
+        ----------
+        variables : dict
+            Dictionary containing the keys and values for each of the required input fields to start a job
+        """  
+        query = """
+            mutation NewViterbiJob($input: ViterbiJobMutationInput!){
+                newViterbiJob (input: $input) {
+                    result {
+                        jobId
+                    }
+                }
+            }
+        """
+
+        variables = {
+            "input": {
+                "start": {
+                    "name": job_name,
+                    "description": job_description,
+                    "private": private,
+                },
+                "data": asdict(data_input),
+                "data_parameters": asdict(data_params),
+                "search_parameters": asdict(search_params),
+            }
+        }
+
+        data = self.request(query=query, variables=variables)
+
+        job_id = data['new_viterbi_job']['result']['job_id']
+        return self.get_job_by_id(job_id)
+
 
     def _get_job_model_from_query(self, query_data):
         if not query_data:
