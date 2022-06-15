@@ -26,7 +26,7 @@ class GWLabViterbi:
         ----------
         variables : dict
             Dictionary containing the keys and values for each of the required input fields to start a job
-        """  
+        """
         query = """
             mutation NewViterbiJob($input: ViterbiJobMutationInput!){
                 newViterbiJob (input: $input) {
@@ -54,7 +54,6 @@ class GWLabViterbi:
 
         job_id = data['new_viterbi_job']['result']['job_id']
         return self.get_job_by_id(job_id)
-
 
     def _get_job_model_from_query(self, query_data):
         if not query_data:

@@ -4,7 +4,7 @@ from dataclasses import dataclass
 @dataclass
 class DataInput:
     """Data input class
-    """    
+    """
     data_choice: str = 'real'
     source_dataset: str = 'o3'
 
@@ -12,7 +12,7 @@ class DataInput:
 @dataclass
 class DataParametersInput:
     """Data parameters input class
-    """    
+    """
     start_frequency_band: str = "188.0"
     min_start_time: str = "1238166483"
     max_start_time: str = "1254582483"
@@ -29,7 +29,7 @@ class DataParametersInput:
 @dataclass
 class SearchParametersInput:
     """Search parameters input class
-    """    
+    """
     search_start_time: str = "1238166483"
     search_t_block: str = "864000"
     search_central_a0: str = "0.01844"
