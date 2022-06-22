@@ -11,7 +11,7 @@ from gwlab_viterbi_python.utils.inputs import DataInput, DataParametersInput, Se
 
 @pytest.fixture
 def setup_gwl_request(mocker):
-    def mock_init(self, token, endpoint):
+    def mock_init(self, token, auth_endpoint, endpoint):
         pass
 
     mock_request = mocker.Mock()
