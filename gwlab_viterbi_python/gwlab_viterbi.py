@@ -8,15 +8,21 @@ from gwdc_python.utils import rename_dict_keys
 from gwdc_python.logger import create_logger
 
 from .viterbi_job import ViterbiJob
+from .exceptions import custom_error_handler
 from .utils.file_download import _download_files, _save_file_map_fn, _get_file_map_fn
-from .settings import GWLAB_VITERBI_ENDPOINT
+from .settings import GWLAB_VITERBI_ENDPOINT, GWLAB_VITERBI_AUTH_ENDPOINT
 
 logger = create_logger(__name__)
 
 
 class GWLabViterbi:
-    def __init__(self, token, endpoint=GWLAB_VITERBI_ENDPOINT):
-        self.client = GWDC(token=token, endpoint=endpoint)
+    def __init__(self, token, auth_endpoint=GWLAB_VITERBI_AUTH_ENDPOINT, endpoint=GWLAB_VITERBI_ENDPOINT):
+        self.client = GWDC(
+            token=token,
+            auth_endpoint=auth_endpoint,
+            endpoint=endpoint,
+            custom_error_handler=custom_error_handler
+        )
         self.request = self.client.request
 
     def start_viterbi_job(self, job_name, job_description, private, data_input, data_params, search_params):
