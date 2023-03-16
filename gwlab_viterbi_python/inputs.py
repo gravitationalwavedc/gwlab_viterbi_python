@@ -3,9 +3,9 @@ from enum import Enum
 
 
 class _InputConfig:
-    validate_assignment=True
-    validate_all=True
-    use_enum_values=True
+    validate_assignment = True
+    validate_all = True
+    use_enum_values = True
 
 
 class DataChoice(Enum):
@@ -68,7 +68,6 @@ class DataParametersInput:
 
     d_freq: str = "5.78703704e-07"
     """Frequency step size (Hz)"""
-
 
 
 @dataclass(config=_InputConfig)

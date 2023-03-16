@@ -53,7 +53,7 @@ class GWLabViterbi:
         -------
         ViterbiJob
             Created job
-        """        
+        """
         query = """
             mutation NewViterbiJob($input: ViterbiJobMutationInput!){
                 newViterbiJob (input: $input) {
