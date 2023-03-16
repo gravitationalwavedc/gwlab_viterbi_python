@@ -4,9 +4,8 @@ from tempfile import TemporaryFile
 from gwdc_python.files import FileReference, FileReferenceList
 from gwdc_python.helpers import JobStatus, TimeRange
 
-from gwlab_viterbi_python import GWLabViterbi, ViterbiJob
+from gwlab_viterbi_python import GWLabViterbi, ViterbiJob, DataInput, DataParametersInput, SearchParametersInput
 from gwlab_viterbi_python.utils.file_download import _get_file_map_fn, _save_file_map_fn
-from gwlab_viterbi_python.utils.inputs import DataInput, DataParametersInput, SearchParametersInput
 
 
 @pytest.fixture
