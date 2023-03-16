@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "gwlab-viterbi-python"
-version = "0.2.1"
+version = "0.2.2"
 description = "Wrapper of GWDC API, used for interacting with the GWLab Viterbi endpoint"
 authors = ["Thomas Reichardt <treichardt@swin.edu.au>"]
 
@@ -14,6 +14,7 @@ importlib-metadata = "^4.5.0"
 Sphinx = {version = "^4.0.2", optional = true}
 sphinx-rtd-theme = {version = "^0.5.2", optional = true}
 tqdm = "^4.61.2"
+pydantic = "^1.10.6"
 
 [tool.poetry.extras]
 docs = ["Sphinx", "sphinx-rtd-theme"]

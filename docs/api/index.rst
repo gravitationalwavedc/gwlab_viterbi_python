@@ -7,4 +7,5 @@ API Reference
 
    gwlabviterbi
    viterbijob
+   inputs
    utils

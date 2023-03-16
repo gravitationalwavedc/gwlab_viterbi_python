@@ -4,6 +4,9 @@ Working with FileReferences and FileReferenceLists
 A completed Viterbi job will have a list of files associated with it.
 With an instance of the :class:`.ViterbiJob` class, we are able to obtain the result files stored in the database.
 
+
+.. _results-files:
+
 Obtaining a job file list
 -------------------------
 

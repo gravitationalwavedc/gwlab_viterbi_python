@@ -8,6 +8,7 @@ from gwdc_python.utils import rename_dict_keys
 from gwdc_python.logger import create_logger
 
 from .viterbi_job import ViterbiJob
+from .inputs import DataInput, DataParametersInput, SearchParametersInput
 from .exceptions import custom_error_handler
 from .utils.file_download import _download_files, _save_file_map_fn, _get_file_map_fn
 from .settings import GWLAB_VITERBI_ENDPOINT, GWLAB_VITERBI_AUTH_ENDPOINT
@@ -25,14 +26,34 @@ class GWLabViterbi:
         )
         self.request = self.client.request
 
-    def start_viterbi_job(self, job_name, job_description, private, data_input, data_params, search_params):
-        """Start a viterbi job in the most basic possible way
+    def start_viterbi_job(
+        self, job_name, job_description, private, data_input=None, data_params=None, search_params=None
+    ):
+        """Start a viterbi job from inputs
 
         Parameters
         ----------
-        variables : dict
-            Dictionary containing the keys and values for each of the required input fields to start a job
-        """
+        job_name : str
+            Name of the job to be created
+        job_description : str
+            Description of the job to be created
+        private : bool
+            True if the job should be private, False if it should be public
+        data_input : DataInput
+            Data inputs for the job, by default None.
+            If None, then default inputs will be used for these fields.
+        data_params : DataParametersInput
+            Data parameters inputs for the job, by default None.
+            If None, then default inputs will be used for these fields.
+        search_params : SearchParametersInput
+            Search parameters inputs for the job, by default None.
+            If None, then default inputs will be used for these fields.
+
+        Returns
+        -------
+        ViterbiJob
+            Created job
+        """        
         query = """
             mutation NewViterbiJob($input: ViterbiJobMutationInput!){
                 newViterbiJob (input: $input) {
@@ -43,6 +64,10 @@ class GWLabViterbi:
             }
         """
 
+        data_inputs = DataInput() if data_input is None else data_input
+        data_parameters_inputs = DataParametersInput() if data_params is None else data_params
+        search_parameters_inputs = SearchParametersInput() if search_params is None else search_params
+
         variables = {
             "input": {
                 "start": {
@@ -50,9 +75,9 @@ class GWLabViterbi:
                     "description": job_description,
                     "private": private,
                 },
-                "data": asdict(data_input),
-                "data_parameters": asdict(data_params),
-                "search_parameters": asdict(search_params),
+                "data": asdict(data_inputs),
+                "data_parameters": asdict(data_parameters_inputs),
+                "search_parameters": asdict(search_parameters_inputs),
             }
         }
 
