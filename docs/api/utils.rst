@@ -20,13 +20,3 @@ The functions within this module are return lists of files based some identifier
    :members:
    :undoc-members:
    :show-inheritance:
-
-Job start inputs
-----------------
-
-The classes within this module contain the inputs necessary to start a job, along with the default values of these inputs
-
-.. automodule:: gwlab_viterbi_python.utils.inputs
-   :members:
-   :undoc-members:
-   :show-inheritance:

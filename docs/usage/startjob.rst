@@ -8,33 +8,37 @@ Along with these inputs, each job requires a name, description and privacy setti
 Using input classes
 -------------------
 
-We have provided some helpful classes :mod:`gwlab_viterbi_python.utils.inputs` with the required inputs to start a job, prefilled with default values:
+Viterbi jobs can be started using the :meth:`gwlab_viterbi_python.GWLabViterbi.start_viterbi_job` method.
+Each job requires a name, a description and a privacy setting. To submit a job with the default settings, we can run:
 
 ::
 
-    from gwlab_viterbi_python.utils import DataInput, DataParametersInput, SearchParametersInput
-    data_input = DataInput()
-    data_params_input = DataParametersInput()
-    search_params_input = SearchParametersInput()
-
-    job = gwc.start_viterbi_job(
+    job = gwl.start_viterbi_job(
         job_name="a_meaningful_name",
         job_description="This job will usher in a new age of learning",
-        private=True,
-        data_input=data_input,
-        data_params=data_params_input,
-        search_params=search_params_input
+        private=True
     )
 
-This method returns a ViterbiJob instance containing information on your new job.
+This method returns a ViterbiJob instance containing information on our new job, along with helpful methods for :ref:`obtaining results files <results-files>`.
 
-Alternatively, you can override the default values in the input classes. For example, we can set the frequency band start and width as follows:
+In :mod:`.gwlab_viterbi_python.inputs`, we have provided some helpful classes with the required inputs to start a job.
+These classes are prefilled with default values for each input field. Alternatively, the default values can be overridden to tailor a Viterbi job for our needs.
+For example, we can set the frequency band start and width as follows:
 
 ::
+
+    from gwlab_viterbi_python import DataParametersInput
 
     data_parameters_input = DataParametersInput(
         start_frequency_band="200",
         freq_band="2"
+    )
+
+    job = gwl.start_viterbi_job(
+        job_name="a_meaningful_name",
+        job_description="This job will usher in a new age of learning",
+        private=True,
+        data_params=data_parameters_input
     )
 
 

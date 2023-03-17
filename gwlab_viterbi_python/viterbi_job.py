@@ -8,7 +8,7 @@ logger = create_logger(__name__)
 
 class ViterbiJob(JobBase):
     """
-    ViterbiJob class is useful for interacting with the Viterbi jobs returned from a call to the GWCloud API.
+    ViterbiJob class is useful for interacting with the Viterbi jobs returned from a call to the GWLab API.
     It is primarily used to store job information and obtain files related to the job.
 
     Parameters
